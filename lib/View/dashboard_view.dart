@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:jyothi_labs_ecommerce/Controller/auth_controller.dart';
 import 'package:jyothi_labs_ecommerce/Controller/products_controller.dart';
+import 'package:jyothi_labs_ecommerce/View/login_view.dart';
 import 'package:provider/provider.dart';
 
 class DashboardView extends StatefulWidget {
@@ -11,10 +13,17 @@ class DashboardView extends StatefulWidget {
 
 class _DashboardViewState extends State<DashboardView> {
   ProductsController productsController = ProductsController();
+  AuthController authController = AuthController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton.filledTonal(
+            onPressed: () {
+              Navigator.pushReplacement(context,
+                  MaterialPageRoute(builder: (context) => LoginView()));
+            },
+            icon: Icon(Icons.logout)),
         title: Text("Dashboard"),
         centerTitle: true,
         backgroundColor: Colors.blue,

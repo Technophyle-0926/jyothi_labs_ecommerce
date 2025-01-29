@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:jyothi_labs_ecommerce/Controller/auth_controller.dart';
 import 'package:jyothi_labs_ecommerce/View/dashboard_view.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
@@ -10,39 +10,11 @@ class LoginView extends StatefulWidget {
 }
 
 class _LoginViewState extends State<LoginView> {
-  String emailId = 'emilys';
-  String pass = 'emilyspass';
-  TextEditingController email = TextEditingController();
-  TextEditingController password = TextEditingController();
-  bool issuccess = true;
+  AuthController authController = AuthController();
+  TextEditingController emailController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
+  bool isSuccess = true;
   bool obscurePass = true;
-  void setData() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setString('email', email.text);
-    await prefs.setString('password', password.text);
-  }
-
-  void checkLogin() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    final String? email = prefs.getString('email');
-    final String? password = prefs.getString('password');
-    if (email == emailId && password == pass) {
-      if (mounted) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const DashboardView()),
-        );
-      }
-    } else {
-      print("error");
-    }
-  }
-
-  @override
-  void initState() {
-    checkLogin();
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -62,13 +34,13 @@ class _LoginViewState extends State<LoginView> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               TextField(
-                controller: email,
+                controller: emailController,
                 decoration: InputDecoration(
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(25),
                   ),
-                  labelText: "Enter Email",
-                  hintText: "example@gmail.com",
+                  labelText: "Enter Username",
+                  hintText: "e.g. JohnDoe",
                   prefixIcon: const Icon(Icons.person),
                 ),
               ),
@@ -76,7 +48,7 @@ class _LoginViewState extends State<LoginView> {
                 height: 20,
               ),
               TextField(
-                controller: password,
+                controller: passwordController,
                 obscureText: obscurePass,
                 decoration: InputDecoration(
                   border: OutlineInputBorder(
@@ -109,22 +81,23 @@ class _LoginViewState extends State<LoginView> {
                 width: double.infinity,
                 child: ElevatedButton(
                     onPressed: () {
-                      if (email.text == emailId && password.text == pass) {
-                        setData();
-                        Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const DashboardView()));
-                        issuccess = true;
-                      } else {
-                        issuccess = false;
-                      }
-
-                      setState(() {});
+                      authController.login(
+                        emailController.text,
+                        passwordController.text,
+                      );
+                      authController.authtoken == null
+                          ? isSuccess = false
+                          : {
+                              isSuccess = true,
+                              Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => DashboardView()))
+                            };
                     },
                     child: const Text("Login")),
               ),
-              issuccess ? const Text("") : const Text("Oops, Try again!")
+              isSuccess ? Text("") : const Text("Oops, Try again!")
             ],
           ),
         ),
